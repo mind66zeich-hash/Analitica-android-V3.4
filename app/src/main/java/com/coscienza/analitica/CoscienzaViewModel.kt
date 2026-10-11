@@ -213,8 +213,11 @@ class CoscienzaViewModel(app: Application) : AndroidViewModel(app) {
                     else -> "ricerca spenta"
                 }
                 val meta = "${Llm.label(o.provider)} · ${o.model} · $searchState"
-                val msg = ChatMsg(if (source == "reflection") "reflection" else "model", r.text, meta = meta)
+                val msg = ChatMsg(if (source == "reflection") "reflection" else "model", r.text)
                 chat += msg
+                // Riga di diagnostica come messaggio di sistema: non entra nella cronologia inviata al modello
+                // e si vede anche se la schermata della chat non è aggiornata.
+                chat += ChatMsg("system", "🔍 $meta")
                 stats = stats.copy(contextTokens = r.promptTokens + r.outputTokens)
                 val saved = memory.add(
                     Layer.EPISODIC, source,
